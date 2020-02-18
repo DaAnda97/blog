@@ -34,18 +34,6 @@ services:
     networks:
       - proxy
 
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 900 --cleanup
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
-    restart: unless-stopped
-    networks:
-      - proxy
-
   netdata:
     image: netdata/netdata
     container_name: netdata
