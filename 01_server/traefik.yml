@@ -19,7 +19,7 @@ entryPoints:
 certificatesResolvers:
   mytlschallenge:
     acme:
-      email: riepl.privat@gmail.com
+      email: ${EMAIL}
       storage: ./acme.json
       httpChallenge:
         entryPoint: http
