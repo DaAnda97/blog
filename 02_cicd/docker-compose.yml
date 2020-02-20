@@ -1,0 +1,85 @@
+version: '3.7'
+
+services:
+
+  jenkins:
+    image: custom-jenkins:latest
+    container_name: jenkins
+    labels:
+      - traefik.http.routers.jenkinsRouter.rule=Host("jenkins.${DOMAIN}")
+      - traefik.http.routers.jenkinsRouter.entrypoints=https
+      - traefik.http.routers.jenkinsRouter.tls=true
+      - traefik.http.routers.jenkinsRouter.tls.certresolver=mytlschallenge
+    volumes:
+      - /opt/data/jenkins/dev-ops:/dev-ops
+      - /opt/data/jenkins/persistent-cache:/persistent-cache
+      - /opt/data/jenkins/volume-caches/build-cache/composer:/.composer
+      - /opt/data/jenkins/volume-caches/build-cache/composer:/home/docker/.composer
+      - /opt/data/jenkins/volume-caches/build-cache/node/npm:/.npm
+      - /opt/data/jenkins/volume-caches/build-cache/node/npm:/home/docker/.npm  
+      - /opt/data/jenkins/volume-caches/build-cache/node/gyp:/.node-gyp
+      - /opt/data/jenkins/volume-caches/build-cache/node/cache:/.cache
+      - /opt/data/jenkins/volume-caches/build-cache/node/config:/.config
+      - /opt/data/jenkins/volume-caches/build-cache/bower/local:/.local
+      - /opt/data/jenkins/volume-caches/build-cache/bower/local:/home/docker/.local
+      - /opt/data/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker-compose:/usr/bin/docker-compose
+      - /usr/bin/docker:/usr/bin/docker
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - proxy
+
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/data/portainer:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - traefik.http.routers.portainerRouter.rule=Host("portainer.${DOMAIN}")
+      - traefik.http.routers.portainerRouter.tls=true
+      - traefik.http.routers.portainerRouter.tls.certresolver=mytlschallenge
+      - traefik.http.routers.portainerRouter.entrypoints=https
+    restart: always
+    networks:
+      - proxy
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 900 --cleanup
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    expose:
+      - 8081
+    volumes:
+      - /opt/data/nexus/nexus-data:/nexus-data:rw
+      - /opt/data/nexus/sonatype-work/:/sonatype-work:rw
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - traefik.http.routers.nexusRouter.rule=Host("nexus.${DOMAIN}")
+      - traefik.http.services.nexus.loadbalancer.server.port=8081
+      - traefik.http.routers.nexusRouter.entrypoints=https
+      - traefik.http.routers.nexusRouter.tls=true
+      - traefik.http.routers.nexusRouter.tls.certresolver=mytlschallenge
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
