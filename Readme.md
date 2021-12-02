@@ -2,10 +2,15 @@
 This repository contains all files I mentioned in my blog posts: https://andreasriepl.de/
 
 ## Install Docker
-1. Create User
+1. Create User and generate ssh key
    ```
-   useradd -m -s /bin/bash <USER>
-   cd /home/<USER>/
+   useradd -m -s /bin/bash andreas
+   cd /home/andreas
+   su andreas
+   ssh-keygen 
+   mkdir -p ~/.ssh
+   touch ~/.ssh/authorized_keys-t rsa
+   cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
    ```
 
 1. Install Docker
@@ -18,7 +23,7 @@ This repository contains all files I mentioned in my blog posts: https://andreas
 
 1. Register user for docker and create network
    ``` bash
-   usermod -a -G docker <USER>
+   usermod -a -G docker andreas
    systemctl restart docker
    docker network create proxy
    ```
