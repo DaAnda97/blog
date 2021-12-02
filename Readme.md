@@ -3,7 +3,7 @@ This repository contains all files I mentioned in my blog posts: https://andreas
 
 ## Install Docker
 1. Create User and generate ssh key
-   ```
+   ```bash
    useradd -m -s /bin/bash andreas
    cd /home/andreas
    su andreas

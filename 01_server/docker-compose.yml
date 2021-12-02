@@ -34,34 +34,6 @@ services:
     networks:
       - proxy
 
-  netdata:
-    image: netdata/netdata
-    container_name: netdata
-    expose: 
-      - 19999
-    environment: 
-      - PGID=998 # grep docker /etc/group | cut -d ':' -f 3
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - apparmor:unconfined
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/passwd:/host/etc/passwd:ro
-      - /etc/group:/host/etc/group:ro
-    labels:
-      - traefik.http.routers.netdataRouter.rule=Host("netdata.${DOMAIN}")
-      - traefik.http.routers.netdataRouter.entrypoints=https
-      - traefik.http.services.netdata.loadbalancer.server.port=19999
-      - traefik.http.routers.netdataRouter.tls=true
-      - traefik.http.routers.netdataRouter.tls.certresolver=mytlschallenge
-      - traefik.http.routers.netdataRouter.middlewares=netdataAuth
-      - traefik.http.middlewares.netdataAuth.basicauth.users=${NETDATA_CREDS}
-    networks:
-      - proxy
-
 networks:
   proxy:
     external: true
