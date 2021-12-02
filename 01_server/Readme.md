@@ -13,7 +13,6 @@
    echo "EMAIL=<YOUR_MAIL>" >> .env
    echo "COMPOSE_PROJECT_NAME=server" >> .env
    echo "TRAEFIK_CREDS=$(echo $(htpasswd -nb <USER> '<PASSWORD>'))" >> .env
-   echo "NETDATA_CREDS=$(echo $(htpasswd -nb <USER> '<PASSWORD>'))" >> .env
    ```
 
 1. Run the service

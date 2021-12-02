@@ -29,16 +29,6 @@ sudo apt remove --yes docker docker-engine docker.io \
 
 printf 'Waiting for Docker to start...\n\n'
 sleep 3
-
-# Docker Compose
-sudo wget \
-        --output-document=/usr/local/bin/docker-compose \
-        https://github.com/docker/compose/releases/download/1.24.0/run.sh \
-    && sudo chmod +x /usr/local/bin/docker-compose \
-    && sudo wget \
-        --output-document=/etc/bash_completion.d/docker-compose \
-        "https://raw.githubusercontent.com/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose" \
-    && printf '\nDocker Compose installed successfully\n\n'
     
 # ensure logging doesn't flood disk
 printf "{\n\"log-driver\": \"json-file\",\n\"log-opts\": {\n \"max-size\": \"10m\",\n \"max-file\": \"2\"\n }\n}"  > /etc/docker/daemon.json
